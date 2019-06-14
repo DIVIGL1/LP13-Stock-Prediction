@@ -1,0 +1,7 @@
+*.pyc
+*.log
+*.sqlight
+.env_*
+.vscode
+env
+__pycache__
