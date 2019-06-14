@@ -5,15 +5,15 @@ initual_data_PERIOD_TYPES = \
             "table_name": "PERIOD_TYPES", "find_and_update_or_insert": True, "id_column": "id", "donot_commit": False,
                 "data":
                 [   {"id": 0, "period_name": "Один тик", "phidden": 1}, 
-                    {"id": 1, "period_name": "Одна минута", "phidden": 0}, 
+                    {"id": 1, "period_name": "Одна минута", "phidden": 1}, 
                     {"id": 2, "period_name": "5 минут", "phidden": 1}, 
                     {"id": 3, "period_name": "10 минут", "phidden": 1}, 
                     {"id": 4, "period_name": "15 минут", "phidden": 1}, 
                     {"id": 5, "period_name": "30 минут", "phidden": 1}, 
-                    {"id": 6, "period_name": "Час", "phidden": 1}, 
-                    {"id": 7, "period_name": "День", "phidden": 0}, 
-                    {"id": 8, "period_name": "Неделя", "phidden": 0}, 
-                    {"id": 9, "period_name": "Месяц", "phidden": 0} 
+                    {"id": 6, "period_name": "Час", "phidden": 0}, 
+                    {"id": 7, "period_name": "День", "phidden": 1}, 
+                    {"id": 8, "period_name": "Неделя", "phidden": 1}, 
+                    {"id": 9, "period_name": "Месяц", "phidden": 1} 
                 ] 
         }
 
