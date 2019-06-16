@@ -19,8 +19,7 @@ def do_command():
     if namespace.name=="initdb":
         # запускается блок по созданию и инициализации базы данных:
         utils.log_print("Starting initialisation of DBase...")
-        if utils.if_module_exist("bd") and utils.if_module_exist("constants") and utils.if_module_exist("utils"):
-            utils.log_print("Starting process of DBase initialisation...")
+        if utils.if_module_exist("db") and utils.if_module_exist("constants") and utils.if_module_exist("utils"):
             import db
             dh.Data_handler()
             return(True)
@@ -31,15 +30,15 @@ def do_command():
         # запускается сервер обеспечивающий взаимодействие с пользователем:
         utils.log_print("Starting server...")
         if \
-            utils.if_module_exist("bd") and \
+            utils.if_module_exist("db") and \
             utils.if_module_exist("prediction") and \
-            utils.if_module_exist("server") and \
+            utils.if_module_exist("webserver") and \
             utils.if_module_exist("constants") and \
             utils.if_module_exist("utils") and \
             utils.if_module_exist("inet"):
                 
-            import server
-            server.start_server()
+            import webserver
+            webserver.start_server()
             return(True)
         else:
             utils.log_print("One of the modules is missing. The program is terminated.")
@@ -48,7 +47,7 @@ def do_command():
         # запускается обновление исторических данных по акциям:
         utils.log_print("Starting process of data updating...")
         if \
-            utils.if_module_exist("bd") and \
+            utils.if_module_exist("db") and \
             utils.if_module_exist("constants") and \
             utils.if_module_exist("utils") and \
             utils.if_module_exist("inet"):
@@ -63,7 +62,7 @@ def do_command():
         # запускается функционал по расчету новых предсказаний и удалению старых:
         utils.log_print("Starting process of behavior predicting...")
         if \
-            utils.if_module_exist("bd") and \
+            utils.if_module_exist("db") and \
             utils.if_module_exist("prediction") and \
             utils.if_module_exist("constants") and \
             utils.if_module_exist("utils") and \
