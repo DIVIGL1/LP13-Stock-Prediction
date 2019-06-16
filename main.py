@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-import sys
 import argparse
+import sys
+
 
 import utils
 
