@@ -47,6 +47,18 @@ def do_command():
     elif namespace.name=="update":
         # запускается обновление исторических данных по акциям:
         utils.log_print("Starting process of data updating...")
+        if \
+            utils.if_module_exist("bd") and \
+            utils.if_module_exist("constants") and \
+            utils.if_module_exist("utils") and \
+            utils.if_module_exist("inet"):
+                
+            import inet
+            inet.update_data()
+            return(True)
+        else:
+            utils.log_print("One of the modules is missing. The program is terminated.")
+            return(False)
     elif namespace.name=="predict":
         # запускается функционал по расчету новых предсказаний и удалению старых:
         utils.log_print("Starting process of behavior predicting...")
