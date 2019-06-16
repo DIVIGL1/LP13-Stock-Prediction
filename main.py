@@ -21,7 +21,7 @@ def do_command():
         utils.log_print("Starting initialisation of DBase...")
         if utils.if_module_exist("db") and utils.if_module_exist("constants") and utils.if_module_exist("utils"):
             import db
-            dh.Data_handler()
+            db.Data_handler()
             return(True)
         else:
             utils.log_print("One of the modules is missing. The program is terminated.")
