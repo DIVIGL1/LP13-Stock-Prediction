@@ -1,4 +1,5 @@
 from web_app import app
+from web_app import db_connection
 from flask import render_template
 
 @app.route("/")
@@ -9,10 +10,10 @@ def index():
 #    content = "Для формирования предсказания по акции, выберите
 #  из сниска ниже, интересующий Вас финансовый инструмент"
 
-    my_list = [["http://ya.ru", "ya.ru"]]
-    my_list = my_list + [["http://yandex.ru", "yandex.ru"]]
-    my_list = my_list + [["http://google.com", "Google"]]
-    my_list = my_list + [["https://www.youtube.com/", "YouTube"]]
+    stocks_list = db_connection.get_stocks_list()
+    my_list = []
+    for one_stock in stocks_list:
+        my_list = my_list + [[one_stock[0], one_stock[2]]]
 
     ret_value = render_template("index.html", title=title, content_title=content_title, content=content, html_list=my_list)
 
