@@ -1,0 +1,22 @@
+{% extends "base_page.html" %}
+
+{% block title %}
+
+    PREDICTION page
+
+{% endblock %}
+
+{% block content_title %}
+
+    PREDICTION page content title
+
+{% endblock %}
+
+{% block content %}
+    <p>PREDICTION page content</p>
+    <hr>
+    <p>Trade code = {{ trade_kod }}</p>
+    <p>Полное наименование: {{ stoks_full_name }}</p>
+    <p>Сокращенное наименование: {{ stoks_short_name }}</p>
+
+{% endblock %}

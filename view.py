@@ -13,8 +13,6 @@ def index():
     stocks_list = db_connection.get_stocks_list()
     my_list = []
     for one_stock in stocks_list:
-        my_list = my_list + [[one_stock[0], one_stock[2]]]
+        my_list = my_list + [["predicts/" + one_stock[0], one_stock[2]]]
 
-    ret_value = render_template("index.html", title=title, content_title=content_title, content=content, html_list=my_list)
-
-    return(ret_value)
+    return(render_template("index.html", title=title, content_title=content_title, content=content, html_list=my_list))
