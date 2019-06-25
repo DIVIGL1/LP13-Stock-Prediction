@@ -35,3 +35,37 @@ PERIOD_TYPES = {
                     for j in range(1, len(initual_data_PERIOD_TYPES["data"]))
                }
 
+DEFAULT_PERIOD_TYPE = PERIOD_TYPES["Час"]
+
+API_URL = "https://mfd.ru/export/handler.ashx/DataFile.txt?"
+API_PARAMS = {
+    "TickerGroup": "16",
+    "Tickers": "330",
+    "Alias": "False",
+    "Period": "7",
+    "timeframeValue": "1,",
+    "timeframeDatePart": "day",
+    "StartDate": "01.06.2019",
+    "EndDate": "09.06.2019",
+    "SaveFormat": "0",
+    "SaveMode": "0",
+    "FileName": "FileWithData.txt",
+    "FieldSeparator": ";",
+    "DecimalSeparator": ".",
+    "DateFormat": "yyyyMMdd",
+    "TimeFormat": "HHmmss",
+    "DateFormatCustom": "",
+    "TimeFormatCustom": "",
+    "AddHeader": "true",
+    "RecordFormat": "0",
+    "Fill": "false"
+}
+API_PARAMS_DATE_FORMAT = "%d.%m.%Y"
+
+DATE_FORMAT_SLASH = "%Y/%m/%d"
+DATETIME_FORMAT_SLASH = "%Y/%m/%d %H:%M:%S"
+DATETIME_FORMAT_DASH = "%Y-%m-%d %H:%M:%S"
+DATETIME_FORMAT_IN_DB = DATETIME_FORMAT_DASH
+
+FIRST_DAY_IN_HISTORY = "2014/01/01"
+FIRST_DATETIME_IN_HISTORY = "2000/01/01 9:00:00"

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import datetime
 import io
 import pandas as pd
@@ -9,46 +8,29 @@ import db
 import constants
 import utils
 
-API_URL = "https://mfd.ru/export/handler.ashx/DataFile.txt?"
-
-API_PARAMS = {
-    "TickerGroup": "16",
-    "Tickers": "330",
-    "Alias": "False",
-    "Period": "7",
-    "timeframeValue": "1,",
-    "timeframeDatePart": "day",
-    "StartDate": "01.06.2019",
-    "EndDate": "09.06.2019",
-    "SaveFormat": "0",
-    "SaveMode": "0",
-    "FileName": "FileWithData.txt",
-    "FieldSeparator": ";",
-    "DecimalSeparator": ".",
-    "DateFormat": "yyyyMMdd",
-    "TimeFormat": "HHmmss",
-    "DateFormatCustom": "",
-    "TimeFormatCustom": "",
-    "AddHeader": "true",
-    "RecordFormat": "0",
-    "Fill": "false"
-}
-
 class Inet_connector():
-    def get_stocks_prices_2df(self, mfd_id, id_period_type=constants.PERIOD_TYPES["Час"], date_begin="", date_end=""):
-        id_period_type = constants.PERIOD_TYPES["Час"]  # Принудительно выставим период в тип = Час
+    '''
+        This class performs connection through API to Internet resource
+        and gives functionality to download information about stocks's prices.
+    '''
+    def __init__(self, str_api_url, dict_api_params):
+        self.api_url = str_api_url
+        self.api_params = dict_api_params
+
+    def get_stocks_prices_2df(self, mfd_id, id_period_type=constants.DEFAULT_PERIOD_TYPE, date_begin="", date_end=""):
+        id_period_type = constants.DEFAULT_PERIOD_TYPE  # Принудительно выставим период в тип = Час
         if not date_begin:
-            date_begin = datetime.datetime.strptime('2014/01/01', "%Y/%m/%d").date()
+            date_begin = datetime.datetime.strptime(constants.FIRST_DAY_IN_HISTORY, constants.DATE_FORMAT_SLASH).date()
         elif type(date_begin)==str:
-            date_begin = datetime.datetime.strptime(date_begin, "%Y/%m/%d").date()
+            date_begin = datetime.datetime.strptime(date_begin, constants.DATE_FORMAT_SLASH).date()
 
         if not date_end:
             date_end = datetime.datetime.now().date()
         elif type(date_end)==str:
-            date_end = datetime.datetime.strptime(date_end, "%Y/%m/%d").date()
+            date_end = datetime.datetime.strptime(date_end, constants.DATE_FORMAT_SLASH).date()
         
-        API_PARAMS["Tickers"] = str(mfd_id)
-        API_PARAMS["Period"] = str(id_period_type)
+        self.api_params["Tickers"] = str(mfd_id)
+        self.api_params["Period"] = str(id_period_type)
 
         # Загружаем партиями по 100 дней, так как ресурс не даёт выгружать большие файлы.
         # В date_begin и date_end у на Даты, а не ДатаВремя
@@ -60,9 +42,9 @@ class Inet_connector():
                 continue_load_data = False
                 last_load_date = date_end
             # ------------------------------
-            API_PARAMS["StartDate"] = datetime.datetime.strftime(first_load_date, "%d.%m.%Y")
-            API_PARAMS["EndDate"] = datetime.datetime.strftime(last_load_date, "%d.%m.%Y")
-            orequest = requests.get(API_URL, params=API_PARAMS)
+            self.api_params["StartDate"] = datetime.datetime.strftime(first_load_date, constants.API_PARAMS_DATE_FORMAT)
+            self.api_params["EndDate"] = datetime.datetime.strftime(last_load_date, constants.API_PARAMS_DATE_FORMAT)
+            orequest = requests.get(self.api_params, params=self.api_params)
             file_in_memory = io.StringIO(orequest.text)
             df = pd.read_csv(file_in_memory, sep=";")
 
@@ -89,16 +71,16 @@ class Inet_connector():
             self.load_stock_prises_from_inet(mfd_id=one_stoks[1])
         otimer.show()
 
-    def load_stock_prises_from_inet(self, mfd_id, id_period_type=constants.PERIOD_TYPES["Час"], date_begin="", date_end=""):
+    def load_stock_prises_from_inet(self, mfd_id, id_period_type=constants.DEFAULT_PERIOD_TYPE, date_begin="", date_end=""):
         if not date_end:
             date_end = datetime.datetime.now().date()
         elif type(date_end)==str:
-            date_end = datetime.datetime.strptime(date_end, "%Y/%m/%d").date()
+            date_end = datetime.datetime.strptime(date_end, constants.DATE_FORMAT_SLASH).date()
 
         if not date_begin:
-            date_begin = datetime.datetime.strptime('2014/01/01', "%Y/%m/%d").date()
+            date_begin = datetime.datetime.strptime(constants.FIRST_DAY_IN_HISTORY, constants.DATE_FORMAT_SLASH).date()
         elif type(date_begin)==str:
-            date_begin = datetime.datetime.strptime(date_begin, "%Y/%m/%d").date()
+            date_begin = datetime.datetime.strptime(date_begin, constants.DATE_FORMAT_SLASH).date()
 
         # так как нам нужно найти последнюю дату в БД,
         # а там хратися DateTime, а у нас в переменной Date
@@ -120,8 +102,8 @@ class Inet_connector():
             date_max = date_begin - datetime.timedelta(days=1)
             date_min = date_max
         else:
-            date_min = datetime.datetime.strptime(ret_value[0][0], "%Y-%m-%d %H:%M:%S").date()
-            date_max = datetime.datetime.strptime(ret_value[0][1], "%Y-%m-%d %H:%M:%S").date()
+            date_min = datetime.datetime.strptime(ret_value[0][0], constants.DATETIME_FORMAT_IN_DB).date()
+            date_max = datetime.datetime.strptime(ret_value[0][1], constants.DATETIME_FORMAT_IN_DB).date()
 
         if date_begin<date_min:
             df = self.get_stocks_prices_2df( 
@@ -147,5 +129,5 @@ class Inet_connector():
 
 
 def update_data():
-    ic = Inet_connector()
+    ic = Inet_connector(constants.API_URL, constants.API_PARAMS)
     ic.update_data()
