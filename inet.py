@@ -23,17 +23,8 @@ class Inet_connector():
             If period is bigger then 100 days it's divided into groups of 100 days.
             The result is returned in DataFrame format.
         '''
-        id_period_type = constants.DEFAULT_PERIOD_TYPE  # Принудительно выставим период в тип = Час
-        if not date_begin:
-            date_begin = datetime.datetime.strptime(constants.FIRST_DAY_IN_HISTORY, constants.DATE_FORMAT_SLASH).date()
-        elif type(date_begin)==str:
-            date_begin = datetime.datetime.strptime(date_begin, constants.DATE_FORMAT_SLASH).date()
+        date_begin, date_end = self._prepare_dates(date_begin, date_end)
 
-        if not date_end:
-            date_end = datetime.datetime.now().date()
-        elif type(date_end)==str:
-            date_end = datetime.datetime.strptime(date_end, constants.DATE_FORMAT_SLASH).date()
-        
         self.api_params["Tickers"] = str(mfd_id)
         self.api_params["Period"] = str(id_period_type)
 
@@ -77,15 +68,8 @@ class Inet_connector():
         otimer.show()
 
     def load_stock_prises_from_inet(self, mfd_id, id_period_type=constants.DEFAULT_PERIOD_TYPE, date_begin="", date_end=""):
-        if not date_end:
-            date_end = datetime.datetime.now().date()
-        elif type(date_end)==str:
-            date_end = datetime.datetime.strptime(date_end, constants.DATE_FORMAT_SLASH).date()
 
-        if not date_begin:
-            date_begin = datetime.datetime.strptime(constants.FIRST_DAY_IN_HISTORY, constants.DATE_FORMAT_SLASH).date()
-        elif type(date_begin)==str:
-            date_begin = datetime.datetime.strptime(date_begin, constants.DATE_FORMAT_SLASH).date()
+        date_begin, date_end = self._prepare_dates(date_begin, date_end)
 
         # так как нам нужно найти последнюю дату в БД,
         # а там хратися DateTime, а у нас в переменной Date
@@ -131,6 +115,20 @@ class Inet_connector():
             if not df.shape[0]==0:
                 print("Подгружаем данные за период с {} по {}.".format(date_max + datetime.timedelta(days=1), date_end))
                 dh.load_stock_prises_from_df2db(mfd_id=mfd_id, id_period_type=id_period_type, df=df)
+
+
+    def _prepare_dates(self, date_begin="", date_end=""):
+        if not date_begin:
+            date_begin = datetime.datetime.strptime(constants.FIRST_DAY_IN_HISTORY, constants.DATE_FORMAT_SLASH).date()
+        elif type(date_begin)==str:
+            date_begin = datetime.datetime.strptime(date_begin, constants.DATE_FORMAT_SLASH).date()
+
+        if not date_end:
+            date_end = datetime.datetime.now().date()
+        elif type(date_end)==str:
+            date_end = datetime.datetime.strptime(date_end, constants.DATE_FORMAT_SLASH).date()
+
+        return(date_begin, date_end)
 
 
 def update_data():
