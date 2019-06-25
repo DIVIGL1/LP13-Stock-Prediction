@@ -101,7 +101,7 @@ class Inet_connector():
                                             date_begin=date_begin, 
                                             date_end=date_min-datetime.timedelta(days=1)
                                             )
-            if not df.shape[0]==0:
+            if df.shape[0]!=0:
                 print("Подгружаем данные за период с {} по {}.".format(date_begin, date_min-datetime.timedelta(days=1)))
                 dh.load_stock_prises_from_df2db(mfd_id=mfd_id, id_period_type=id_period_type, df=df)
 
@@ -112,7 +112,7 @@ class Inet_connector():
                                                         date_begin=date_max + datetime.timedelta(days=1), 
                                                         date_end=date_end
                                                      )
-            if not df.shape[0]==0:
+            if df.shape[0]!=0:
                 print("Подгружаем данные за период с {} по {}.".format(date_max + datetime.timedelta(days=1), date_end))
                 dh.load_stock_prises_from_df2db(mfd_id=mfd_id, id_period_type=id_period_type, df=df)
 
