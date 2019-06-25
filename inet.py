@@ -18,6 +18,11 @@ class Inet_connector():
         self.api_params = dict_api_params
 
     def get_stocks_prices_2df(self, mfd_id, id_period_type=constants.DEFAULT_PERIOD_TYPE, date_begin="", date_end=""):
+        '''
+            This method downloads information about stocks's prices for period between <date_begin> and <date_end>.
+            If period is bigger then 100 days it's divided into groups of 100 days.
+            The result is returned in DataFrame format.
+        '''
         id_period_type = constants.DEFAULT_PERIOD_TYPE  # Принудительно выставим период в тип = Час
         if not date_begin:
             date_begin = datetime.datetime.strptime(constants.FIRST_DAY_IN_HISTORY, constants.DATE_FORMAT_SLASH).date()
