@@ -6,7 +6,7 @@ def get_dbase_path():
     try:
         basedir = os.path.abspath(os.path.dirname(__file__))
         basedir = os.path.join(basedir, "DBase")
-        if not os.path.isdir(basedir): 
+        if not os.path.isdir(basedir):
             os.makedirs(basedir)
 
         ret_path = os.path.join(basedir, "test.sqlight")
@@ -18,11 +18,11 @@ def get_dbase_path():
 def prepare_df(df):
     columns_list = df.columns
 
-    if not (
-        ("<DATE>" in columns_list) and
-        ("<TIME>" in columns_list) and
-        ("<CLOSE>" in columns_list) and
-        ("<VOL>" in columns_list)
+    if not ( 
+                ("<DATE>" in columns_list) and
+                ("<TIME>" in columns_list) and 
+                ("<CLOSE>" in columns_list) and
+                ("<VOL>" in columns_list)
             ):
         print("prepare_df: Указанный файл не содержит нужных столбцов.")
         return(False)
@@ -72,9 +72,10 @@ def if_module_exist(module_name):
     module_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), module_name + ".py")
     return(os.path.exists(module_path))
 
-def log_print(text):
-    if not if_module_exist("logging_prosses"):
+def log_print(text, to_screen=True, to_log=True):
+    if to_screen:
         print(text)
-    else:
-        import logging_prosses
-        logging_prosses.log_print(text)
+    if to_log:
+        if if_module_exist("logging_prosses"):
+            import logging_prosses
+            logging_prosses.log_print(text)
