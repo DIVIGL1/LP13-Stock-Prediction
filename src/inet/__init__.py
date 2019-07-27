@@ -6,6 +6,7 @@ import time
 
 import src.db as db
 import src.constants as constants
+import src.prediction as prediction
 import src.utils as utils
 
 class Inet_connector():
@@ -58,13 +59,15 @@ class Inet_connector():
 
         return(ret_df)
     
-    def update_data(self):
+    def update_data(self, ppredict=False):
         otimer = utils.Timer("Get started loading all stocks prices:")
         dh = db.Data_handler()
         stocks_list = dh.get_stocks_list()
         for one_stoks in stocks_list:
             print("\nLoading prices for {}, {}".format(one_stoks[0], one_stoks[2]))
             self.load_stock_prises_from_inet(mfd_id=one_stoks[1])
+            if ppredict:
+                prediction.make_stock_prediction(mfd_id=one_stoks[1], db_connection=dh)
         otimer.show()
 
     def load_stock_prises_from_inet(self, mfd_id, id_period_type=constants.DEFAULT_PERIOD_TYPE, date_begin="", date_end=""):
@@ -93,7 +96,7 @@ class Inet_connector():
         else:
             date_min = datetime.datetime.strptime(ret_value[0][0], constants.DATETIME_FORMAT_IN_DB).date()
             date_max = datetime.datetime.strptime(ret_value[0][1], constants.DATETIME_FORMAT_IN_DB).date()
-
+        
         if date_begin<date_min:
             df = self.get_stocks_prices_2df( 
                                             mfd_id=mfd_id, 
@@ -116,6 +119,16 @@ class Inet_connector():
                 print("Подгружаем данные за период с {} по {}.".format(date_max + datetime.timedelta(days=1), date_end))
                 dh.load_stock_prises_from_df2db(mfd_id=mfd_id, id_period_type=id_period_type, df=df)
 
+        if ((date_max==date_end) and (date_begin==date_min) and date_end==datetime.datetime.today().date()):
+            df = self.get_stocks_prices_2df( 
+                                                        mfd_id=mfd_id, 
+                                                        id_period_type=id_period_type, 
+                                                        date_begin=date_end, 
+                                                        date_end=date_end
+                                                     )
+            if df.shape[0]!=0:
+                print("Подгружаем данные за сегодняшний день период.")
+                dh.load_stock_prises_from_df2db(mfd_id=mfd_id, id_period_type=id_period_type, df=df)
 
     def _prepare_dates(self, date_begin="", date_end=""):
         if not date_begin:
@@ -131,6 +144,6 @@ class Inet_connector():
         return(date_begin, date_end)
 
 
-def update_data():
+def update_data(ppredict=False):
     ic = Inet_connector(constants.API_URL, constants.API_PARAMS)
-    ic.update_data()
+    ic.update_data(ppredict=ppredict)

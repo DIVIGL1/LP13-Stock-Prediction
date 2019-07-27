@@ -79,9 +79,10 @@ class Data_handler():
             print("create_tables: При создании таблицы PERIOD_TYPES возникла ошибка.")
             return(False)
         try:
-            cur.execute("CREATE TABLE IF NOT EXISTS STOCKS_PRICES (mfd_id INTEGER NOT NULL, price_dt TIMESTAMP NOT NULL, id_period_type INTEGER NOT NULL, price_open REAL NOT NULL, price_min REAL NOT NULL, price_max REAL NOT NULL, price_close REAL NOT NULL, vol INTEGER NOT NULL)")
+            cur.execute("CREATE TABLE IF NOT EXISTS STOCKS_PRICES (mfd_id INTEGER NOT NULL, price_dt TIMESTAMP NOT NULL, id_period_type INTEGER NOT NULL, price_open REAL NOT NULL, price_min REAL NOT NULL, price_max REAL NOT NULL, price_close REAL NOT NULL, vol INTEGER NOT NULL, ppredict INTEGER NOT NULL)")
             cur.execute("CREATE TRIGGER IF NOT EXISTS trig_STOCKS_PRICES_befor_insert BEFORE INSERT ON STOCKS_PRICES FOR EACH ROW BEGIN DELETE FROM STOCKS_PRICES WHERE mfd_id=NEW.mfd_id AND price_dt=NEW.price_dt AND id_period_type=NEW.id_period_type; END")
             cur.execute("CREATE UNIQUE INDEX IF NOT EXISTS unique_combination ON STOCKS_PRICES (mfd_id, price_dt, id_period_type)")
+            cur.execute("CREATE INDEX IF NOT EXISTS ppredict ON STOCKS_PRICES (ppredict)")
         except:
             print("create_tables: При создании таблицы STOCKS_PRICES возникла ошибка.")
             return(False)
@@ -186,8 +187,8 @@ class Data_handler():
                 cur.execute("INSERT INTO PERIOD_TYPES (id, period_name, phidden) VALUES(?, ?, ?)", \
                     ( data["id"], data["period_name"], data["phidden"] ) )
             elif table_name=="STOCKS_PRICES":
-                cur.execute("INSERT INTO STOCKS_PRICES (mfd_id, price_dt, id_period_type, price_open, price_min, price_max, price_close, vol) VALUES(?, ?, ?, ?, ?, ?, ?, ?)", \
-                    ( data["mfd_id"], data["price_dt"], data["id_period_type"], data["price_open"], data["price_min"], data["price_max"], data["price_close"], data["vol"] ) )
+                cur.execute("INSERT INTO STOCKS_PRICES (mfd_id, price_dt, id_period_type, price_open, price_min, price_max, price_close, vol, ppredict) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)", \
+                    ( data["mfd_id"], data["price_dt"], data["id_period_type"], data["price_open"], data["price_min"], data["price_max"], data["price_close"], data["vol"], data["ppredict"] ) )
             else:
                 print("add_row: Попытка добавить данные в несуществующую таблицу: " + table_name)
                 return(False)
@@ -203,14 +204,14 @@ class Data_handler():
 
 
 
-    def get_stocks_prices_pd(self, mfd_id, id_period_type=constants.DEFAULT_PERIOD_TYPE, price_type="MAX", dt_begin="", dt_end=""):# 
+    def get_stocks_prices_pd(self, mfd_id, id_period_type=constants.DEFAULT_PERIOD_TYPE, price_type="MAX", dt_begin="", dt_end="", ppredict=0): 
         if not self._connector:
             return(False)
         dt_begin, dt_end = self._prepare_dates(dt_begin, dt_end)        
         cur = self._connector.cursor()
         try:
-            cur.execute("SELECT price_dt, price_{} AS price, vol FROM STOCKS_PRICES WHERE mfd_id=? and id_period_type=? AND price_dt BETWEEN ? AND ? ORDER BY price_dt".format(price_type.lower()),(mfd_id, id_period_type, dt_begin, dt_end))
-            return(pd.DataFrame(cur.fetchall(),columns=["price_dt","price","vol"]))
+            cur.execute("SELECT price_dt, price_{} AS price, vol FROM STOCKS_PRICES WHERE mfd_id=? and id_period_type=? AND ppredict=? AND price_dt BETWEEN ? AND ? ORDER BY price_dt".format(price_type.lower()), (mfd_id, id_period_type, ppredict, dt_begin, dt_end))
+            return(pd.DataFrame(cur.fetchall(), columns=["price_dt", "price", "vol"]))
         except:
             print("get_stocks_list: При попытке получить выборку из таблицы STOCKS_PRICES возникла ошибка.")
             return(False)
@@ -250,7 +251,8 @@ class Data_handler():
                                     "price_min": row[2], 
                                     "price_max": row[3], 
                                     "price_close": row[4], 
-                                    "vol": row[5]
+                                    "vol": row[5],
+                                    "ppredict": row[6]
                                 } 
                                 ]
                             }
@@ -259,7 +261,9 @@ class Data_handler():
                     break
         
             if p_all_transactions_good: self._connector.commit()
-            else: self._connector.rollback()
+            else: 
+                self._connector.rollback()
+                print("Была ошибка")
             return(p_all_transactions_good)
 
    
@@ -270,7 +274,7 @@ class Data_handler():
         dt_begin, dt_end = self._prepare_dates(dt_begin, dt_end)   
         cur = self._connector.cursor()
         try:
-            cur.execute("SELECT MIN(price_dt), MAX(price_dt) FROM STOCKS_PRICES WHERE mfd_id=? AND id_period_type=? AND price_dt BETWEEN ? AND ?",(mfd_id, id_period_type, dt_begin, dt_end))
+            cur.execute("SELECT MIN(price_dt), MAX(price_dt) FROM STOCKS_PRICES WHERE mfd_id=? AND id_period_type=? AND price_dt BETWEEN ? AND ? AND ppredict=0",(mfd_id, id_period_type, dt_begin, dt_end))
             return(cur.fetchall())
         except:
             print("get_stocks_list: При попытке получить максммальную и минимальную даты из таблицы STOCKS_PRICES возникла ошибка.")

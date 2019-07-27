@@ -1,3 +1,6 @@
+from datetime import timedelta
+import datetime
+
 initual_data_PERIOD_TYPES = \
         {
             "table_name": "PERIOD_TYPES", "find_and_update_or_insert": True, "id_column": "id", "donot_commit": False,
@@ -21,9 +24,9 @@ initual_data_STOCKS = \
                 "data":
                 [   {"trade_kod": "GAZP", "mfd_id": 330, "full_name": 'ПАО "Газпром", акция обыкновенная', "short_name": "ГАЗПРОМ а/о", "order_field": 1, "phidden": 0}, 
                     {"trade_kod": "LKOH", "mfd_id": 632, "full_name": 'ПАО "Нефтяная компания "ЛУКОЙЛ", акция обыкновенная', "short_name": "ЛУКОЙЛ а/о", "order_field": 2, "phidden": 0}, 
-                    {"trade_kod": "MTLR", "mfd_id": 9060, "full_name": 'ПАО  "Мечел", акция обыкновенная', "short_name": "МЕЧЕЛ а/о", "order_field": 3, "phidden": 0}, 
-                    {"trade_kod": "TGKB", "mfd_id": 1567, "full_name": 'ОАО "Территориальная генерирующая компания №2", а/о', "short_name": "ТГК-2 а/о", "order_field": 4, "phidden": 0}, 
-                    {"trade_kod": "NSVZ", "mfd_id": 41928, "full_name": 'ПАО Многофункциональный оператор связи "Наука-Связь"', "short_name": "НаукаСвяз а/о", "order_field": 5, "phidden": 0} 
+                    {"trade_kod": "ROS", "mfd_id": 1373, "full_name": 'ПАО "Нефтяная компания "РОСНЕФТЬ", акция обыкновенная', "short_name": "РОСНЕФТЬ а/о", "order_field": 2, "phidden": 0}, 
+                    {"trade_kod": "NLMK", "mfd_id": 913, "full_name": 'ПАО "Новолипецкий металлургический комбинат", акция обыкновенная', "short_name": "НЛМК", "order_field": 2, "phidden": 0}, 
+                    {"trade_kod": "MMK", "mfd_id": 716, "full_name": 'ПАО "Магнитогорский металлургический комбинат", акция обыкновенная', "short_name": "ММК а/о", "order_field": 2, "phidden": 0} 
                 ] 
         }
 
@@ -65,8 +68,16 @@ DATETIME_FORMAT_SLASH = "%Y/%m/%d %H:%M:%S"
 DATETIME_FORMAT_DASH = "%Y-%m-%d %H:%M:%S"
 DATETIME_FORMAT_IN_DB = DATETIME_FORMAT_DASH
 
-FIRST_DAY_IN_HISTORY = "2014/01/01"
-FIRST_DATETIME_IN_HISTORY = "2000/01/01 9:00:00"
+FIRST_DAY_OF_PREDICTION_DATASET = (datetime.date.today() - datetime.timedelta(days=170)).strftime(DATE_FORMAT_SLASH)
+FIRST_DAY_OF_PLOT = (datetime.date.today() - datetime.timedelta(days=7)).strftime(DATE_FORMAT_SLASH)
+
+FIRST_DAY_IN_HISTORY = FIRST_DAY_OF_PREDICTION_DATASET
+FIRST_DATETIME_IN_HISTORY = FIRST_DAY_OF_PREDICTION_DATASET + " 9:00:00"
+
+MAX_LAG_FOR_PREDICTION = 9*100
+DEPTH_OF_PREDICTION = 9*2 # Два дня
+PREDICTION_STEP = timedelta(hours=1)
+NEXT_DAY_AFTER_PREDICTION = datetime.datetime.today()+timedelta(hours=DEPTH_OF_PREDICTION+1)
 
 MODULES_PARAM_GROUPS = {
     "initdb": ["db", "constants", "utils"],

@@ -8,5 +8,3 @@ if utils.if_all_modules_exist(constants.MODULES_PARAM_GROUPS["start"]):
     webserver.start_server()
 else:
     utils.log_print("One of the modules is missing. The program is terminated.")
-    
-
