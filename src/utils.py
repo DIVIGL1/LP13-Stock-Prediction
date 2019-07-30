@@ -26,7 +26,7 @@ def prepare_df(df):
     else:
         df["<DT>"] = df["<DATE>"]
     # Вернём только нужные столбцы и в нужном порядке.
-    if not ( "ppredict" in columns_list ):
+    if not ("ppredict" in columns_list):
         df["ppredict"] = 0
     return(df[["<DT>", "<OPEN>", "<HIGH>", "<LOW>", "<CLOSE>", "<VOL>", "ppredict"]])
 
@@ -84,7 +84,4 @@ def if_all_modules_exist(modules_list):
 def log_print(text, to_screen=True, to_log=True):
     if to_screen:
         print(text)
-#    if to_log:
-#        if if_module_exist("logging_prosses"):
-#            import logging_prosses
-#            logging_prosses.log_print(text)
+        

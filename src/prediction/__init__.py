@@ -12,6 +12,9 @@ warnings.filterwarnings('ignore')
 
 
 def make_prediction():
+    '''
+        Do prediction for each stock 
+    '''
     otimer = utils.Timer("Get started process of stocs's prices prediction:")
     dh = db.Data_handler()
     stocks_list = dh.get_stocks_list()
@@ -21,6 +24,9 @@ def make_prediction():
     otimer.show()
 
 def make_stock_prediction(mfd_id, db_connection):
+    '''
+        Make pridiction for 4 prices.
+    '''
     X_tmp = make_stock_prediction_for_one_price(db_connection, mfd_id=mfd_id, sprice_type="OPEN")
 
     X_predicted = X_tmp[["y"]].copy()
@@ -44,6 +50,9 @@ def make_stock_prediction(mfd_id, db_connection):
 
 
 def make_stock_prediction_for_one_price(db_connection, mfd_id, sprice_type):
+    '''
+        Do prediction for one element - one type of price.
+    '''
     print("Формируем предсказание для цены: ", sprice_type)
     df = db_connection.get_stocks_prices_pd(
                     mfd_id=mfd_id,
@@ -73,6 +82,10 @@ def make_stock_prediction_for_one_price(db_connection, mfd_id, sprice_type):
     return(X_test)
 
 def prepare_prediction(X, X_test):
+    '''
+        It's prepare some columns with information of 
+        previos price and then make prediction using LinearRegression.
+    '''
     ndivider = X.shape[0]
     for num_row in tqdm(range(X_test.shape[0])):
         # Получим данные для обучения:

@@ -1,15 +1,16 @@
-import base64
 import datetime
 from flask import Blueprint
 from flask import make_response
 from flask import render_template
 import io
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 
 import src.constants as constants
 import src.db as db
+
+# import base64
+# import numpy as np
 
 predicts = Blueprint("predicts", __name__, template_folder="templates")
 
@@ -77,7 +78,7 @@ def predict_detail(inline_kod):
             minute = str(curr_date.minute).zfill(2)
             xlabels.append(f'{day}/{month} {hour}:{minute}')
         ax.set_xticks(xx)
-        ax.set_xticklabels(xlabels, rotation=335, fontsize=7)
+        ax.set_xticklabels(xlabels, rotation=330, fontsize=7)
 
 
         ax.plot(df["price"], "b", label="Фактические данные")
