@@ -1,6 +1,5 @@
 import datetime
 import os
-import sys
 
 import sqlite3 as sqlite
 import pandas as pd
@@ -19,17 +18,20 @@ class Data_handler():
     а справочники щаролнены.
     """
     def __init__(self):
-        self.get_connector()                #соединение с БД
-        self.create_tables()                #Создаем таблицы
+        ''' 
+        Объект класса позволяет работать с базой данных.
+        '''
+        self.get_connector()
+        self.create_tables()
         
         # Добавим данные в справочники.
         # В PERIOD_TYPES:
-        initual_data = constants.initual_data_PERIOD_TYPES      #заполнение таблиц из constants
-        self.add_rows_from_struct(initual_data)                 #
+        initual_data = constants.initual_data_PERIOD_TYPES
+        self.add_rows_from_struct(initual_data)
 
         # В STOCKS:
-        initual_data = constants.initual_data_STOCKS            #заполнение таблиц из constants
-        self.add_rows_from_struct(initual_data)                 #
+        initual_data = constants.initual_data_STOCKS
+        self.add_rows_from_struct(initual_data)
 
 
     def get_dbase_path(self):
@@ -44,12 +46,19 @@ class Data_handler():
             print("Не удалось подготовить информацию о расположении базы данных.")
             return("")
     
-    def __del__(self):       #закрытие соединения                               
+    def __del__(self):
+        '''
+        При уничтожении экземпляра класса 
+        закрывается соединение с базой данных.
+        '''
         self._connector.close()      #
         print("Закрыли соединение с БД.")
 
 
-    def get_connector(self):    #функця соединения
+    def get_connector(self):
+        '''
+        Подключение к базе данных.
+        '''
         try:
             self._connector = sqlite.connect(self.get_dbase_path(), check_same_thread=False)
         except (sqlite.Error):
@@ -64,6 +73,9 @@ class Data_handler():
             return(False)    
     
     def create_tables(self):   #функця создания таблиц
+        '''
+        Создание основных таблиц, их индексов, тригеров и заполнение справочников.
+        '''
         if not self._connector:
             return(False)
         
@@ -91,6 +103,9 @@ class Data_handler():
 
     
     def get_stocks_list(self): #выбор одного из инструментов
+        '''
+        Предоставление списка акций.
+        '''
         if not self._connector:
             return(False)
         
@@ -105,7 +120,10 @@ class Data_handler():
         return(True)
     
     
-    def get_period_types_list(self): #выбор шага обновления данных
+    def get_period_types_list(self):
+        '''
+        Предоставление списка возможных периодов (временных шагов).
+        '''
         if not self._connector:
             return(False)
         
@@ -120,15 +138,17 @@ class Data_handler():
         return(True)       
 
     
-    
     def add_rows_from_struct(self, data):
+        '''
+        Добавление в таблицу данных представленных в виде специализированный структуры.
+        '''
         ret_code = True
         for one_row in data["data"]:
             ret_code = self.add_row(data["table_name"], one_row, find_and_update_or_insert=data["find_and_update_or_insert"], id_column=data["id_column"], donot_commit=data["donot_commit"])
             if not ret_code: break
         return(ret_code)
-    
-    
+
+
     def add_row(self, table_name, data, find_and_update_or_insert=False, id_column="", donot_commit=False):
         ''' 
         Данная функция предназеачена для ввода даных по одной строке.
@@ -139,11 +159,12 @@ class Data_handler():
         найти строку с соответствующим идентификатором. если такая строка найдена то она обновляется,
         а если не найдена то добавляется новая строка.
         Если параметр <donot_commit>=True то по завершении метода commit не делается.
-        ''' 
+        '''
         if not self._connector:
             print("add_row: У данного объекта отсутствует коннектор.")
             return(False)
-        
+
+
         table_name = table_name.replace(" ","").upper()
         cur = self._connector.cursor()
         if find_and_update_or_insert:
@@ -196,15 +217,16 @@ class Data_handler():
             print("add_row: При добавлении строки в таблицу {} возникла ошибка.".format(table_name))
             self._connector.rollback()
             return(False)
-        
+
         if not donot_commit: self._connector.commit()
         # Так как ошибок не было, то выходим с True
         return(True)
-    
-
 
 
     def get_stocks_prices_pd(self, mfd_id, id_period_type=constants.DEFAULT_PERIOD_TYPE, price_type="MAX", dt_begin="", dt_end="", ppredict=0): 
+        '''
+        Выборка цен на акцию по условию и предоставление данных в формате Pandas DataFrame.
+        '''
         if not self._connector:
             return(False)
         dt_begin, dt_end = self._prepare_dates(dt_begin, dt_end)        
@@ -215,9 +237,12 @@ class Data_handler():
         except:
             print("get_stocks_list: При попытке получить выборку из таблицы STOCKS_PRICES возникла ошибка.")
             return(False)
-    
+
 
     def load_stock_prises_from_file2df(self, file_name):    # Вынрузка данных из файла "file_name"
+        '''
+        Загрузка информации о ценах из локального файла в формат Pandas DataFrame.
+        '''
         if not os.path.isfile(file_name):
             print("load_stock_prises_from_file: Файл '{}' не найден.".format(file_name))
             return(False)
@@ -229,6 +254,9 @@ class Data_handler():
 
 
     def load_stock_prises_from_df2db(self, mfd_id, id_period_type, df): #добавляем данные в БД
+        '''
+        Загрузка цен акций в базу данных из таблицы в формате Pandas DataFrame.
+        '''
         try:
             rows_ko_bo = df.shape[0]
         except:
@@ -267,8 +295,10 @@ class Data_handler():
             return(p_all_transactions_good)
 
    
-    """ Функция для выбора периода выборки """
     def get_stocks_prices_min_max_dates(self, mfd_id, id_period_type=constants.DEFAULT_PERIOD_TYPE, dt_begin="", dt_end=""):
+        '''
+        Выбор и возврат информации о минимальной и максимальной дате цены на акцию, хранящихся в базе данных.
+        '''
         if not self._connector:
             return(False)
         dt_begin, dt_end = self._prepare_dates(dt_begin, dt_end)   
@@ -279,10 +309,12 @@ class Data_handler():
         except:
             print("get_stocks_list: При попытке получить максммальную и минимальную даты из таблицы STOCKS_PRICES возникла ошибка.")
             return(False)
-    
 
 
     def _prepare_dates(self, dt_begin="", dt_end=""):
+        '''
+        Внутреняя функция по предварительной обработке дат.
+        '''
         if not dt_begin:
             dt_begin = datetime.datetime.strptime(constants.FIRST_DATETIME_IN_HISTORY, constants.DATETIME_FORMAT_SLASH)
         elif type(dt_begin)==str:
@@ -292,15 +324,3 @@ class Data_handler():
         elif type(dt_end)==str:
             dt_end = datetime.datetime.strptime(dt_end, constants.DATE_FORMAT_SLASH if len(dt_end)==10 else constants.DATETIME_FORMAT_SLASH)
         return (dt_begin, dt_end)
-
-
-if __name__ == "__main__":
-    dh = Data_handler()
-    df = dh.load_stock_prises_from_file2df('DF2.txt')
-    dh.load_stock_prises_from_df2db(330, 7, df)
-    print(dh.get_stocks_prices_min_max_dates(330,7))
-
-
-
-
-
