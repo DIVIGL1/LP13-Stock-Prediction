@@ -31,6 +31,11 @@ def prepare_df(df):
     return(df[["<DT>", "<OPEN>", "<HIGH>", "<LOW>", "<CLOSE>", "<VOL>", "ppredict"]])
 
 class Timer():
+    '''
+    Создаётся объект, который позволяет
+    засекать вреям и отображать сколько 
+    времени прошло в читаемом формате/
+    '''
     def __init__(self, timer_name=""):
         self.timer_name = timer_name
         self.start_position_of_timer = time.time()
@@ -55,8 +60,10 @@ class Timer():
 
 
 def d2dt(date):
+    # Преобразование даты в ДатаВремя
     return(datetime.datetime(date.year, date.month, date.day))
 def last_second_of_date(date):
+    # ЭПолучение последнего мгновения (секунды) в указанных суткахЭ
     return(d2dt(date) + datetime.timedelta(days=1) - datetime.timedelta(seconds=1))
 
 def if_module_exist(module_name):
