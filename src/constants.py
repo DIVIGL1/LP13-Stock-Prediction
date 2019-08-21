@@ -1,6 +1,7 @@
 from datetime import timedelta
 import datetime
 
+
 initual_data_PERIOD_TYPES = \
         {
             "table_name": "PERIOD_TYPES", "find_and_update_or_insert": True, "id_column": "id", "donot_commit": False,

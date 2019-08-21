@@ -89,6 +89,10 @@ def if_all_modules_exist(modules_list):
     return(p_flag)
 
 def log_print(text, to_screen=True, to_log=True):
+    '''
+    Данная функция должна заниматься регистрацией (логированием) событий,
+    но, возможно будут просто заменена стандартной библиотекой.
+    '''
     if to_screen:
         print(text)
         

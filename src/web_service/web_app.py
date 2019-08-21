@@ -5,6 +5,7 @@ from src.web_service.predicts.blueprint import predicts
 
 import src.db as db
 
+
 app = Flask(__name__)
 app.config.from_object(Configuraton)
 

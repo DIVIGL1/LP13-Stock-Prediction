@@ -8,8 +8,8 @@ import src.constants as constants
 import src.db as db
 import src.utils as utils
 
-warnings.filterwarnings('ignore')
 
+warnings.filterwarnings('ignore')
 
 def make_prediction():
     '''

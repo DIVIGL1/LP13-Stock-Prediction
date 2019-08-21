@@ -1,6 +1,7 @@
 import os
 import sys
 
+
 def if_module_exist(module_name):
     folder_module = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "src" ,module_name)  # Полный путь до модуля, если это папка.
     init_in_folder_module = os.path.join(folder_module, "__init__.py")  # Полный путь до __init__.py в папке.

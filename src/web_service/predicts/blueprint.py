@@ -9,8 +9,6 @@ import pandas as pd
 import src.constants as constants
 import src.db as db
 
-# import base64
-# import numpy as np
 
 predicts = Blueprint("predicts", __name__, template_folder="templates")
 

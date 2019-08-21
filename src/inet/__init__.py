@@ -9,6 +9,7 @@ import src.constants as constants
 import src.prediction as prediction
 import src.utils as utils
 
+
 class Inet_connector():
     '''
         This class performs connection through API to Internet resource

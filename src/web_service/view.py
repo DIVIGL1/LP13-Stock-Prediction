@@ -2,6 +2,7 @@ from src.web_service.web_app import app
 from src.web_service.web_app import db_connection
 from flask import render_template
 
+
 @app.route("/")
 def index():
     title = "Стартовая страница"

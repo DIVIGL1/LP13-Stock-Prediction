@@ -1,6 +1,7 @@
 import src.constants as constants
 import src.utils as utils
 
+
 # запускается блок по созданию и инициализации базы данных:
 utils.log_print("Starting initialisation of DBase...")
 if utils.if_all_modules_exist(constants.MODULES_PARAM_GROUPS["initdb"]):
